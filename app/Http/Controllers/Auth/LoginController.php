@@ -36,5 +36,11 @@ public function validateLogin(Request $request){
     $this->validate($request,['usuario'=>'required|string','password'=>'required|string']);//lang.Auth.validation
 }
 
+public function logout(Request $request){
+    Auth::logout();
+    $request->session()->invalidate();
+    return redirect('/');
+}
+
 
 }
