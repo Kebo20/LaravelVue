@@ -52,6 +52,11 @@ Route::group(['middleware' => ['auth']], function () {
         Route::put('/categoria/activar', 'CategoriaController@activar');
         Route::put('/categoria/desactivar', 'CategoriaController@desactivar');
 
+         //INGRESO
+         Route::get('/ingreso', 'IngresoController@index');
+         Route::post('/ingreso/registrar', 'IngresoController@store');
+         Route::put('/ingreso/desactivar', 'IngresoController@desactivar');
+
         //ARTICULO
         Route::get('/articulo', 'ArticuloController@index');
         Route::post('/articulo/registrar', 'ArticuloController@store');

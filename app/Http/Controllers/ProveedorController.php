@@ -62,7 +62,7 @@ class ProveedorController extends Controller
                 'from' => $proveedor->firstItem(),
                 'to' => $proveedor->lastItem(),
             ],
-            'proveedor' => $proveedor
+            'proveedores' => $proveedor
 
         ];
     }

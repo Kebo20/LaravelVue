@@ -353,7 +353,7 @@ export default {
             me.criterio
         )
         .then(function(response) {
-          me.arrayProveedor = response.data.proveedor.data;
+          me.arrayProveedor = response.data.proveedores.data;
           me.pagination = response.data.pagination;
           console.log(response);
         })
