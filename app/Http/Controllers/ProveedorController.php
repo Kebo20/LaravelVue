@@ -13,7 +13,24 @@ use Exception;
 class ProveedorController extends Controller
 {
 
-
+    public function selectProveedor(Request $request)
+    {
+        
+        if (!$request->ajax()) return redirect('/');
+        $filtro=$request->filtro;
+        $proveedor = Proveedor::join("personas", "personas.id", "=", "proveedores.id")->select(
+            "personas.id",
+            "personas.nombre",
+            "personas.tipo_documento",
+            "personas.num_documento",
+            "personas.email",
+            "personas.telefono",
+            "personas.direccion",
+            "proveedores.contacto",
+            "proveedores.telefono_contacto"
+        )->where("personas.nombre", 'like', "%" . $filtro . "%")->orderBy('personas.id', 'desc')->get();
+        return $proveedor;
+    }
 
     public function index(Request $request)
     {
@@ -102,7 +119,7 @@ class ProveedorController extends Controller
 
     public function update(Request $request)
     {
-       
+
         if (!$request->ajax()) return redirect('/');
 
         try {
@@ -120,16 +137,15 @@ class ProveedorController extends Controller
             $persona->direccion = $request->direccion;
             $persona->save();
 
-            
+
             $proveedor->contacto = $request->contacto;
             $proveedor->telefono_contacto = $request->telefono_contacto;
             $proveedor->save();
-            
+
             DB::commit();
         } catch (Exception $ex) {
 
             DB::rollBack();
         }
-
     }
 }

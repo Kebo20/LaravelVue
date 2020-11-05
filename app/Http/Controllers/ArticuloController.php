@@ -58,7 +58,6 @@ class ArticuloController extends Controller
         //$articulos = DB::table('articulos')->paginate(2);// QUERY BUILDER
         return [
             'pagination' => [
-
                 'total' => $articulos->total(),
                 'current_page' => $articulos->currentPage(),
                 'per_page' => $articulos->perPage(),
@@ -67,10 +66,19 @@ class ArticuloController extends Controller
                 'to' => $articulos->lastItem(),
             ],
             'articulos' => $articulos
-
         ];
     }
 
+    public function buscarArticulo(Request $request){
+        if (!$request->ajax()) return redirect('/');
+        $filtro=$request->filtro;
+
+        $articulo=Articulo::where('codigo','=',$filtro)->select('id','nombre')->orderBy('nombre','asc')
+        ->take(1)->get();
+
+        return $articulo;
+
+    }
 
     public function store(Request $request)
     {
