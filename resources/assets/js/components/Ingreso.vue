@@ -229,10 +229,10 @@
                       class="form-control"
                       v-model="articulo"
                     />
-
                   </div>
-                  <span v-show="idarticulo==0" style="color:red">Seleccione</span>
-
+                  <span v-show="idarticulo == 0" style="color: red"
+                    >Seleccione</span
+                  >
                 </div>
               </div>
               <div class="col-md-2">
@@ -246,8 +246,9 @@
                     class="form-control"
                     v-model="precio"
                   />
-                  <span v-show="precio==''||precio < 0" style="color:red">Ingrese un precio correcto</span>
-
+                  <span v-show="precio == '' || precio < 0" style="color: red"
+                    >Ingrese un precio correcto</span
+                  >
                 </div>
               </div>
               <div class="col-md-2">
@@ -259,8 +260,11 @@
                     class="form-control"
                     v-model="cantidad"
                   />
-                    <span v-show="cantidad==''||cantidad < 0" style="color:red">Ingrese una cantidad correcta</span>
-                
+                  <span
+                    v-show="cantidad == '' || cantidad < 0"
+                    style="color: red"
+                    >Ingrese una cantidad correcta</span
+                  >
                 </div>
               </div>
               <div class="col-md-2">
@@ -287,10 +291,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr
-                      v-for="detalle in arrayDetalle"
-                      :key="detalle.id"
-                    >
+                    <tr v-for="detalle in arrayDetalle" :key="detalle.id">
                       <td>
                         <button
                           type="button"
@@ -319,53 +320,48 @@
                     </tr>
                   </tbody>
                 </table>
-                
-                <div class="col-6" style="left:50%" >
-                <table class="table table-bordered table-striped table-sm">
-                  <tbody v-for="dato in total" :key="dato">
-                    
 
-                    <tr style="background-color: #ceecf5">
-                      <td colspan="4" align="right">
-                        <strong>Total Parcial:</strong>
-                      </td>
-                      <td>
-                       
-                        <span
-                          v-text="dato.total_parcial"
-                          class="form-control"
-                          readonly
-                        ></span>
-                      </td>
-                    </tr>
-                    <tr style="background-color: #ceecf5">
-                      <td colspan="4" align="right">
-                        <strong>Total Impuesto:</strong>
-                      </td>
-                      <td>
-                       
-                        <span
-                          v-text="dato.total_impuesto"
-                          class="form-control"
-                          readonly
-                        ></span>
-                      </td>
-                    </tr>
-                    <tr style="background-color: #ceecf5">
-                      <td colspan="4" align="right">
-                        <strong>Total Neto:</strong>
-                      </td>
-                      <td>
-                       
-                        <span
-                          v-text="dato.total_neto"
-                          class="form-control"
-                          readonly
-                        ></span>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                <div class="col-6" style="left: 50%">
+                  <table class="table table-bordered table-striped table-sm">
+                    <tbody v-for="dato in total" :key="dato">
+                      <tr style="background-color: #ceecf5">
+                        <td colspan="4" align="right">
+                          <strong>Total Parcial:</strong>
+                        </td>
+                        <td>
+                          <span
+                            v-text="dato.total_parcial"
+                            class="form-control"
+                            readonly
+                          ></span>
+                        </td>
+                      </tr>
+                      <tr style="background-color: #ceecf5">
+                        <td colspan="4" align="right">
+                          <strong>Total Impuesto:</strong>
+                        </td>
+                        <td>
+                          <span
+                            v-text="dato.total_impuesto"
+                            class="form-control"
+                            readonly
+                          ></span>
+                        </td>
+                      </tr>
+                      <tr style="background-color: #ceecf5">
+                        <td colspan="4" align="right">
+                          <strong>Total Neto:</strong>
+                        </td>
+                        <td>
+                          <span
+                            v-text="dato.total_neto"
+                            class="form-control"
+                            readonly
+                          ></span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
@@ -416,7 +412,7 @@
               <span aria-hidden="true">×</span>
             </button>
           </div>
-          <div class="modal-body">
+          <div class="modal-body table-responsive">
             <div class="card-body">
               <div class="form-group row">
                 <div class="col-md-6">
@@ -457,12 +453,12 @@
                     <td>
                       <button
                         type="button"
-                        class="btn btn-info btn-sm"
+                        class="btn btn-success btn-sm"
                         data-toggle="modal"
                         data-target="#modalNuevo"
                         @click="seleccionarArticulo(articulo)"
                       >
-                        <i class="icon-pencil"></i>
+                        <i class="icon-check"></i>
                       </button>
                     </td>
                     <td v-text="articulo.codigo"></td>
@@ -558,9 +554,7 @@
 import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
 
-import Swal from 'sweetalert';
-
-
+import Swal from "sweetalert";
 
 export default {
   data() {
@@ -616,26 +610,26 @@ export default {
   },
   components: {
     vSelect,
-    Swal
+    Swal,
   },
   computed: {
     total: function () {
       let me = this;
 
-      var parcial = 0;
+      var neto = 0;
       for (var i = 0; i < me.arrayDetalle.length; i++) {
         var subtotal =
           parseFloat(me.arrayDetalle[i].precio) *
           parseInt(me.arrayDetalle[i].cantidad);
-        parcial = parcial + subtotal;
+        neto = neto + subtotal;
       }
-      var impuesto = parcial * me.impuesto;
-      var neto = parseFloat(parcial) + impuesto;
+      var impuesto = (neto * me.impuesto) / (1 + me.impuesto);
+      var parcial = parseFloat(neto) - impuesto;
       var total = [
         {
-          total_parcial: 'S/. '+ parcial.toFixed(2),
-          total_impuesto: 'S/. '+ impuesto.toFixed(2),
-          total_neto: 'S/. '+neto.toFixed(2),
+          total_parcial: "S/. " + parcial.toFixed(2),
+          total_impuesto: "S/. " + impuesto.toFixed(2),
+          total_neto: "S/. " + neto.toFixed(2),
         },
       ];
 
@@ -696,13 +690,24 @@ export default {
   methods: {
     añadirDetalle() {
       let me = this;
-      if (me.idarticulo == 0 || me.cantidad==0 || me.precio==0 || me.cantidad<0 || me.precio<0 ) {
+      if (
+        me.idarticulo == 0 ||
+        me.cantidad == 0 ||
+        me.precio == 0 ||
+        me.cantidad < 0 ||
+        me.precio < 0
+      ) {
         return false;
       }
 
       for (var i = 0; i < me.arrayDetalle.length; i++) {
         if (me.arrayDetalle[i].idarticulo == me.idarticulo) {
-          swal({type:'error',icon:'error',title:'Error ...',text:'¡Este artículo ya se encuentra agregado!'})
+          swal({
+            type: "error",
+            icon: "error",
+            title: "Error ...",
+            text: "¡Este artículo ya se encuentra agregado!",
+          });
           return false;
         }
       }
@@ -736,9 +741,11 @@ export default {
       let me = this;
       me.idarticulo = articulo.id;
       me.articulo = articulo.nombre;
-      me.codigo = articulo.codigo;
 
-      me.modal = 0;
+      me.precio=1
+      me.cantidad=1
+      this.añadirDetalle();
+      //me.modal = 0;
     },
     listarArticulo(page) {
       let me = this;
