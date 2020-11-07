@@ -86,6 +86,13 @@ class IngresoController extends Controller
         try {
             DB::beginTransaction();
             $time = Carbon::now('America/Lima');
+            $total = 0;
+            $detalles = $request->detalles;
+            foreach ($detalles as $d) {
+
+                $total = $total +($d['cantidad'] * $d['precio']);
+            }
+
             $ingreso = new Ingreso();
             $ingreso->tipo_comprobante = $request->tipo_comprobante;
             $ingreso->serie_comprobante = $request->serie_comprobante;
@@ -94,11 +101,10 @@ class IngresoController extends Controller
             $ingreso->estado = "registrado";
             $ingreso->idproveedor = $request->idproveedor;
             $ingreso->idusuario = Auth::user()->id;
-            $ingreso->impuesto = $request->impuesto;
-            $ingreso->total = $request->total;
+            $ingreso->impuesto =($total* $request->impuesto)/(1+ $request->impuesto);
+            $ingreso->total = $total;
 
             $ingreso->save();
-            $detalles = $request->detalles;
 
             foreach ($detalles as $d) {
                 $detalle = new DetalleIngreso();

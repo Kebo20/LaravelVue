@@ -54,6 +54,8 @@ Route::group(['middleware' => ['auth']], function () {
 
          //INGRESO
          Route::get('/ingreso', 'IngresoController@index');
+         Route::get('/detalle-ingreso', 'DetalleIngresoController@ListarxIngreso');
+
          Route::post('/ingreso/registrar', 'IngresoController@store');
          Route::put('/ingreso/desactivar', 'IngresoController@desactivar');
 

@@ -396,7 +396,6 @@ export default {
       this.errorPersona = 0;
       this.errorMostrarMsjPersona = [];
       
-    
       if (!this.nombre)this.errorMostrarMsjPersona.push("El nombre no puede estar vacío");
       if (this.nombre.length>50)this.errorMostrarMsjPersona.push("El nombre debe contener 50 caracteres max.");
         

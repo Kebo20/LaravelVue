@@ -11,7 +11,7 @@
           <i class="fa fa-align-justify"></i> Ingresos
           <button
             type="button"
-            @click="mostrarDetalle()"
+            @click="mostrar()"
             class="btn btn-secondary"
           >
             <i class="icon-plus"></i>&nbsp;Nuevo
@@ -31,13 +31,13 @@
                   <input
                     type="text"
                     v-model="buscar"
-                    @keyup.enter="listarIngreso(1, buscar, criterio)"
+                    @keyup.enter="listarIngreso(1)"
                     class="form-control"
                     placeholder="Texto a buscar"
                   />
                   <button
                     type="submit"
-                    @click="listarIngreso(1, buscar, criterio)"
+                    @click="listarIngreso(1)"
                     class="btn btn-primary"
                   >
                     <i class="fa fa-search"></i> Buscar
@@ -66,7 +66,7 @@
                     <td>
                       <button
                         type="button"
-                        @click="abrirModal('ingreso', 'actualizar', ingreso)"
+                        @click="mostrarDetalle(ingreso.id)"
                         class="btn btn-success btn-sm"
                       >
                         <i class="icon-eye"></i>
@@ -90,8 +90,8 @@
                     <td v-text="ingreso.serie_comprobante"></td>
                     <td v-text="ingreso.num_comprobante"></td>
                     <td v-text="ingreso.fecha_hora"></td>
-                    <td v-text="ingreso.total"></td>
-                    <td v-text="ingreso.impuesto"></td>
+                    <td v-text="'S/. ' +ingreso.total"></td>
+                    <td v-text="'S/. ' +ingreso.impuesto"></td>
                     <td v-text="ingreso.estado"></td>
                   </tr>
                 </tbody>
@@ -155,6 +155,14 @@
               <div class="col-md-9">
                 <div class="form-group">
                   <label for="">Proveedor(*)</label>
+
+                  <span
+                    class="text-center text-error"
+                    v-for="e in errorsProveedor"
+                    :key="e"
+                    v-text="e"
+                  ></span>
+
                   <v-select
                     v-model="proveedor"
                     @search="selectProveedor"
@@ -164,6 +172,7 @@
                     placeholder="Buscar Proveedores..."
                   >
                   </v-select>
+
                   <!--<select class="form-control" v-model="idproveedor">
                     <option value="0">Seleccione</option>
                     <option v-for="proveedor in arrayProveedor" :key="proveedor.id" :value="proveedor.id" v-text="proveedor.nombre"></option>
@@ -172,11 +181,23 @@
               </div>
               <div class="col-md-3">
                 <label for="">Impuesto(*)</label>
-                <input type="text" class="form-control" v-model="impuesto" />
+                <span
+                  class="text-center text-error"
+                  v-for="e in errorsImpuesto"
+                  :key="e"
+                  v-text="e"
+                ></span>
+                <input type="number" class="form-control" v-model="impuesto" />
               </div>
               <div class="col-md-4">
                 <div class="form-group">
                   <label>Tipo Comprobante(*)</label>
+                  <span
+                    class="text-center text-error"
+                    v-for="e in errorsTipoComprobante"
+                    :key="e"
+                    v-text="e"
+                  ></span>
                   <select class="form-control" v-model="tipo_comprobante">
                     <option value="0">Seleccione</option>
                     <option value="BOLETA">Boleta</option>
@@ -188,17 +209,32 @@
               <div class="col-md-4">
                 <div class="form-group">
                   <label>Serie Comprobante</label>
+
                   <input
                     type="text"
                     class="form-control"
                     v-model="serie_comprobante"
                     placeholder="000x"
                   />
+                  <div
+                    class="text-center text-error"
+                    v-for="e in errorsSerie"
+                    :key="e"
+                    v-text="e"
+                  >
+                    <br />
+                  </div>
                 </div>
               </div>
               <div class="col-md-4">
                 <div class="form-group">
                   <label>Número Comprobante(*)</label>
+                  <span
+                    class="text-center text-error"
+                    v-for="e in errorsNumero"
+                    :key="e"
+                    v-text="e"
+                  ></span>
                   <input
                     type="text"
                     class="form-control"
@@ -389,7 +425,7 @@
       </div>
       <!-- Fin ejemplo de tabla Listado -->
     </div>
-    <!--Inicio del modal agregar/actualizar-->
+    <!--Inicio del modal articulos-->
     <div
       class="modal fade"
       tabindex="-1"
@@ -547,6 +583,69 @@
       <!-- /.modal-dialog -->
     </div>
     <!--Fin del modal-->
+
+    <!--Inicio del modal detalle-->
+    <div
+      class="modal fade"
+      tabindex="-1"
+      :class="{ mostrar: modal_detalle }"
+      role="dialog"
+      aria-labelledby="myModalLabel"
+      style="display: none"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-primary modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Detalle compra</h4>
+            <button
+              type="button"
+              class="close"
+              @click="cerrarModalDetalle()"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body table-responsive">
+            <div class="card-body">
+              <table class="table table-bordered table-striped table-sm text-right">
+                <thead>
+                  <tr>
+                    <th>Articulo</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="detalle in arrayIngresoDetalle" :key="detalle.id">
+                   
+                    <td v-text="detalle.nombre"></td>
+
+                    <td v-text="detalle.cantidad"></td>
+                    <td v-text="'S/. ' +detalle.precio"></td>
+                    <td v-text="'S/. ' +(detalle.cantidad * detalle.precio)"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              @click="cerrarModalDetalle()"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!--Fin del modal-->
   </main>
 </template>
 
@@ -555,6 +654,7 @@ import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
 
 import Swal from "sweetalert";
+import swal from "sweetalert";
 
 export default {
   data() {
@@ -577,9 +677,17 @@ export default {
       arrayProveedor: [],
       arrayArticulo: [],
       arrayDetalle: [],
+      arrayIngresoDetalle: [],
+
+      errorsProveedor: [],
+      errorsImpuesto: [],
+      errorsTipoComprobante: [],
+      errorsSerie: [],
+      errorsNumero: [],
 
       listado: 1,
       modal: 0,
+      modal_detalle: 0,
       tituloModal: "",
       tipoAccion: 0,
       errorIngreso: 0,
@@ -688,6 +796,53 @@ export default {
     },
   },
   methods: {
+    registrarIngreso() {
+      let me = this;
+      if (me.arrayDetalle.length == 0) {
+        swal({
+          icon: "warning",
+          title: "Mensaje",
+          text: "¡Sin datos!",
+        });
+        return false;
+      }
+
+      if (this.validarDatos()) {
+        axios
+          .post("/ingreso/registrar", {
+            detalles: me.arrayDetalle,
+            serie_comprobante: me.serie_comprobante,
+            num_comprobante: me.num_comprobante,
+            tipo_comprobante: me.tipo_comprobante,
+            idproveedor: me.idproveedor,
+            impuesto: me.impuesto,
+          })
+          .then(function (response) {
+            swal({
+              icon: "success",
+              title: "Correcto",
+              text: "¡compra registrada!",
+            });
+          })
+          .catch(function (error) {
+            console.log(error);
+
+            swal({
+              icon: "error",
+              title: "Error",
+              text: "Compra no registrada",
+            });
+          });
+      } else {
+        swal({
+          icon: "warning",
+          title: "Mensaje",
+          text: "¡complete los campos correctamente!",
+        });
+        return false;
+      }
+    },
+
     añadirDetalle() {
       let me = this;
       if (
@@ -742,8 +897,8 @@ export default {
       me.idarticulo = articulo.id;
       me.articulo = articulo.nombre;
 
-      me.precio=1
-      me.cantidad=1
+      me.precio = 1;
+      me.cantidad = 1;
       this.añadirDetalle();
       //me.modal = 0;
     },
@@ -768,19 +923,42 @@ export default {
     },
     cambiarPaginaArticulo(page) {
       let me = this;
-      me.pagination.current_page = page;
+      me.pagination_articulo.current_page = page;
       me.listarArticulo(page);
     },
-    listarIngreso(page, buscar, criterio) {
+    cambiarPagina(page) {
+      let me = this;
+      me.pagination.current_page = page;
+      me.listarIngreso(page);
+    },
+    listarIngreso(page) {
       let me = this;
       var url =
-        "/ingreso?page=" + page + "&buscar=" + buscar + "&criterio=" + criterio;
+        "/ingreso?page=" +
+        page +
+        "&buscar=" +
+        me.buscar +
+        "&criterio=" +
+        me.criterio;
       axios
         .get(url)
         .then(function (response) {
           var respuesta = response.data;
           me.arrayIngreso = respuesta.ingresos.data;
           me.pagination = respuesta.pagination;
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+    listarIngresoDetalle(idingreso) {
+      let me = this;
+      var url = "/detalle-ingreso?idingreso=" + idingreso;
+      axios
+        .get(url)
+        .then(function (response) {
+          me.arrayIngresoDetalle = response.data;
+          
         })
         .catch(function (error) {
           console.log(error);
@@ -829,8 +1007,9 @@ export default {
         });
     },
 
-    mostrarDetalle() {
-      this.listado = 0;
+    mostrarDetalle(idingreso) {
+      this.modal_detalle = 1;
+      this.listarIngresoDetalle(idingreso);
     },
     ocultarDetalle() {
       this.listado = 1;
@@ -842,6 +1021,40 @@ export default {
     cerrarModal() {
       this.modal = 0;
       this.arrayArticulo = [];
+    },
+    cerrarModalDetalle() {
+      this.modal_detalle = 0;
+      this.arrayIngresoDetalle = [];
+    },
+
+    validarDatos() {
+      let me = this;
+      me.errorsProveedor = [];
+      me.errorsImpuesto = [];
+      me.errorsTipoComprobante = [];
+      me.errorsSerie = [];
+      me.errorsNumero = [];
+      var expresion_num = /[0-9]/;
+
+      if (me.idproveedor == 0) me.errorsProveedor.push("Seleccione");
+      if (me.impuesto < 0) me.errorsImpuesto.push("Ingrese un némero valido");
+      if (me.tipo_comprobante == 0) me.errorsTipoComprobante.push("Seleccione");
+      if (me.serie_comprobante == "")
+        me.errorsSerie.push("Ingrese la serie del comprobante");
+      if (isNaN(me.impuesto)) me.errorsImpuesto.push("Solo se permite numeros");
+      if (me.num_comprobante == "")
+        me.errorsNumero.push("Ingrese un numero de comprobante");
+
+      if (
+        me.errorsProveedor.length > 0 ||
+        me.errorsImpuesto.length > 0 ||
+        me.errorsTipoComprobante.length > 0 ||
+        me.errorsSerie.length > 0 ||
+        me.errorsNumero.length > 0
+      ) {
+        return false;
+      }
+      return true;
     },
   },
   mounted() {
@@ -862,6 +1075,8 @@ export default {
   position: absolute !important;
   background-color: #3c29297a !important;
 }
+
+
 .div-error {
   display: flex;
   justify-content: center;
