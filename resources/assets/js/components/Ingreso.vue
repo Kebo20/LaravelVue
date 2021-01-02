@@ -9,11 +9,7 @@
       <div class="card">
         <div class="card-header">
           <i class="fa fa-align-justify"></i> Ingresos
-          <button
-            type="button"
-            @click="mostrar()"
-            class="btn btn-secondary"
-          >
+          <button type="button" @click="mostrar()" class="btn btn-secondary">
             <i class="icon-plus"></i>&nbsp;Nuevo
           </button>
         </div>
@@ -90,8 +86,8 @@
                     <td v-text="ingreso.serie_comprobante"></td>
                     <td v-text="ingreso.num_comprobante"></td>
                     <td v-text="ingreso.fecha_hora"></td>
-                    <td v-text="'S/. ' +ingreso.total"></td>
-                    <td v-text="'S/. ' +ingreso.impuesto"></td>
+                    <td v-text="'S/. ' + ingreso.total"></td>
+                    <td v-text="'S/. ' + ingreso.impuesto"></td>
                     <td v-text="ingreso.estado"></td>
                   </tr>
                 </tbody>
@@ -352,7 +348,7 @@
                           class="form-control"
                         />
                       </td>
-                      <td v-text="detalle.precio * detalle.cantidad"></td>
+                      <td v-text="(detalle.precio * detalle.cantidad).toFixed(2)"></td>
                     </tr>
                   </tbody>
                 </table>
@@ -609,7 +605,9 @@
           </div>
           <div class="modal-body table-responsive">
             <div class="card-body">
-              <table class="table table-bordered table-striped table-sm text-right">
+              <table
+                class="table table-bordered table-striped table-sm text-right"
+              >
                 <thead>
                   <tr>
                     <th>Articulo</th>
@@ -620,12 +618,15 @@
                 </thead>
                 <tbody>
                   <tr v-for="detalle in arrayIngresoDetalle" :key="detalle.id">
-                   
                     <td v-text="detalle.nombre"></td>
 
                     <td v-text="detalle.cantidad"></td>
-                    <td v-text="'S/. ' +detalle.precio"></td>
-                    <td v-text="'S/. ' +(detalle.cantidad * detalle.precio)"></td>
+                    <td v-text="'S/. ' + detalle.precio"></td>
+                    <td
+                      v-text="
+                        'S/. ' + (detalle.cantidad * detalle.precio).toFixed(2)
+                      "
+                    ></td>
                   </tr>
                 </tbody>
               </table>
@@ -796,6 +797,54 @@ export default {
     },
   },
   methods: {
+    desactivarIngreso(id) {
+      swal({
+        title: "¿Esta seguro de anular este ingreso?",
+
+        icon: "warning",
+        buttons: {
+          confirm: {
+            text: "Aceptar",
+            value: true,
+            visible: true,
+            className: "btn",
+            closeModal: true,
+          },
+          cancel: {
+            text: "Cancel",
+            value: false,
+            visible: true,
+            className: "btn",
+            closeModal: true,
+          },
+        },
+      }).then((result) => {
+        if (result) {
+          let me = this;
+
+          axios
+            .put("/ingreso/desactivar", {
+              id: id,
+            })
+            .then(function (response) {
+              me.listarIngreso(1);
+              swal(
+                "Anulado!",
+                "El ingreso ha sido anulado con éxito.",
+                "success"
+              );
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+        } else if (
+          // Read more about handling dismissals
+          result.dismiss === swal.DismissReason.cancel
+        ) {
+        }
+      });
+    },
+
     registrarIngreso() {
       let me = this;
       if (me.arrayDetalle.length == 0) {
@@ -833,6 +882,7 @@ export default {
               text: "Compra no registrada",
             });
           });
+        me.listarIngreso();
       } else {
         swal({
           icon: "warning",
@@ -958,7 +1008,6 @@ export default {
         .get(url)
         .then(function (response) {
           me.arrayIngresoDetalle = response.data;
-          
         })
         .catch(function (error) {
           console.log(error);
@@ -1056,6 +1105,10 @@ export default {
       }
       return true;
     },
+
+    mostrar() {
+      this.listado = 0;
+    },
   },
   mounted() {
     this.listarIngreso(1, this.buscar, this.criterio);
@@ -1075,7 +1128,6 @@ export default {
   position: absolute !important;
   background-color: #3c29297a !important;
 }
-
 
 .div-error {
   display: flex;

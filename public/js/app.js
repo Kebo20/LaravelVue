@@ -44681,6 +44681,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 
@@ -44824,6 +44825,46 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     }
   },
   methods: {
+    desactivarIngreso: function desactivarIngreso(id) {
+      var _this = this;
+
+      __WEBPACK_IMPORTED_MODULE_2_sweetalert___default()({
+        title: "¿Esta seguro de anular este ingreso?",
+
+        icon: "warning",
+        buttons: {
+          confirm: {
+            text: "Aceptar",
+            value: true,
+            visible: true,
+            className: "btn",
+            closeModal: true
+          },
+          cancel: {
+            text: "Cancel",
+            value: false,
+            visible: true,
+            className: "btn",
+            closeModal: true
+          }
+        }
+      }).then(function (result) {
+        if (result) {
+          var me = _this;
+
+          axios.put("/ingreso/desactivar", {
+            id: id
+          }).then(function (response) {
+            me.listarIngreso(1);
+            __WEBPACK_IMPORTED_MODULE_2_sweetalert___default()("Anulado!", "El ingreso ha sido anulado con éxito.", "success");
+          }).catch(function (error) {
+            console.log(error);
+          });
+        } else if (
+        // Read more about handling dismissals
+        result.dismiss === __WEBPACK_IMPORTED_MODULE_2_sweetalert___default.a.DismissReason.cancel) {}
+      });
+    },
     registrarIngreso: function registrarIngreso() {
       var me = this;
       if (me.arrayDetalle.length == 0) {
@@ -44858,6 +44899,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             text: "Compra no registrada"
           });
         });
+        me.listarIngreso();
       } else {
         __WEBPACK_IMPORTED_MODULE_2_sweetalert___default()({
           icon: "warning",
@@ -45031,6 +45073,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         return false;
       }
       return true;
+    },
+    mostrar: function mostrar() {
+      this.listado = 0;
     }
   },
   mounted: function mounted() {
@@ -46441,7 +46486,9 @@ var render = function() {
                                 _c("td", {
                                   domProps: {
                                     textContent: _vm._s(
-                                      detalle.precio * detalle.cantidad
+                                      (
+                                        detalle.precio * detalle.cantidad
+                                      ).toFixed(2)
                                     )
                                   }
                                 })
@@ -46971,7 +47018,10 @@ var render = function() {
                             _c("td", {
                               domProps: {
                                 textContent: _vm._s(
-                                  "S/. " + detalle.cantidad * detalle.precio
+                                  "S/. " +
+                                    (detalle.cantidad * detalle.precio).toFixed(
+                                      2
+                                    )
                                 )
                               }
                             })
